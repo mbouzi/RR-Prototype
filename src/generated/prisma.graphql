@@ -8,6 +8,7 @@
 type Comment implements Node {
   id: ID!
   text: String!
+  postedBy(where: UserWhereInput): User
 }
 
 type User implements Node {
@@ -15,6 +16,7 @@ type User implements Node {
   username: String!
   email: String!
   password: String!
+  comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
 }
 
 
@@ -53,6 +55,16 @@ type CommentConnection {
 }
 
 input CommentCreateInput {
+  text: String!
+  postedBy: UserCreateOneWithoutCommentsInput
+}
+
+input CommentCreateManyWithoutPostedByInput {
+  create: [CommentCreateWithoutPostedByInput!]
+  connect: [CommentWhereUniqueInput!]
+}
+
+input CommentCreateWithoutPostedByInput {
   text: String!
 }
 
@@ -123,6 +135,31 @@ input CommentSubscriptionWhereInput {
 
 input CommentUpdateInput {
   text: String
+  postedBy: UserUpdateOneWithoutCommentsInput
+}
+
+input CommentUpdateManyWithoutPostedByInput {
+  create: [CommentCreateWithoutPostedByInput!]
+  connect: [CommentWhereUniqueInput!]
+  disconnect: [CommentWhereUniqueInput!]
+  delete: [CommentWhereUniqueInput!]
+  update: [CommentUpdateWithWhereUniqueWithoutPostedByInput!]
+  upsert: [CommentUpsertWithWhereUniqueWithoutPostedByInput!]
+}
+
+input CommentUpdateWithoutPostedByDataInput {
+  text: String
+}
+
+input CommentUpdateWithWhereUniqueWithoutPostedByInput {
+  where: CommentWhereUniqueInput!
+  data: CommentUpdateWithoutPostedByDataInput!
+}
+
+input CommentUpsertWithWhereUniqueWithoutPostedByInput {
+  where: CommentWhereUniqueInput!
+  update: CommentUpdateWithoutPostedByDataInput!
+  create: CommentCreateWithoutPostedByInput!
 }
 
 input CommentWhereInput {
@@ -240,6 +277,7 @@ input CommentWhereInput {
   All values not ending with the given string.
   """
   text_not_ends_with: String
+  postedBy: UserWhereInput
 }
 
 input CommentWhereUniqueInput {
@@ -345,6 +383,18 @@ input UserCreateInput {
   username: String!
   email: String!
   password: String!
+  comments: CommentCreateManyWithoutPostedByInput
+}
+
+input UserCreateOneWithoutCommentsInput {
+  create: UserCreateWithoutCommentsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutCommentsInput {
+  username: String!
+  email: String!
+  password: String!
 }
 
 """
@@ -422,6 +472,27 @@ input UserUpdateInput {
   username: String
   email: String
   password: String
+  comments: CommentUpdateManyWithoutPostedByInput
+}
+
+input UserUpdateOneWithoutCommentsInput {
+  create: UserCreateWithoutCommentsInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: UserUpdateWithoutCommentsDataInput
+  upsert: UserUpsertWithoutCommentsInput
+}
+
+input UserUpdateWithoutCommentsDataInput {
+  username: String
+  email: String
+  password: String
+}
+
+input UserUpsertWithoutCommentsInput {
+  update: UserUpdateWithoutCommentsDataInput!
+  create: UserCreateWithoutCommentsInput!
 }
 
 input UserWhereInput {
@@ -645,6 +716,9 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   password_not_ends_with: String
+  comments_every: CommentWhereInput
+  comments_some: CommentWhereInput
+  comments_none: CommentWhereInput
 }
 
 input UserWhereUniqueInput {

@@ -1,6 +1,7 @@
 type Comment {
   id: ID! @unique
   text: String!
+  postedBy: User
 }
 
 type User {
@@ -8,4 +9,5 @@ type User {
   username: String!
   email: String! @unique
   password: String!
+  comments: [Comment!]!
 }
