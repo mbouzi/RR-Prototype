@@ -6,4 +6,17 @@ type Query {
 
 type Mutation {
   post(text: String!): Comment!
+  signup(email: String!, password: String!, username: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
 }
