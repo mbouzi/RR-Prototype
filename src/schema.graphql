@@ -3,3 +3,7 @@
 type Query {
   feed(filter: String, skip: Int, first: Int): [Comment!]!
 }
+
+type Mutation {
+  post(text: String!): Comment!
+}
