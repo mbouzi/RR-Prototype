@@ -1,4 +1,5 @@
-# import Comment, Vote from "./generated/prisma.graphql"
+# import Comment, Vote, LinkSubscriptionPayload, VoteSubscriptionPayload from './generated/prisma.graphql'
+
 
 type Query {
   feed(filter: String, skip: Int, first: Int): [Comment!]!
@@ -9,6 +10,11 @@ type Mutation {
   signup(email: String!, password: String!, username: String!): AuthPayload
   login(email: String!, password: String!): AuthPayload
   vote(commentId: ID!): Vote
+}
+
+type Subscription {
+  newComment: CommentSubscriptionPayload
+  newVote: VoteSubscriptionPayload
 }
 
 type AuthPayload {
