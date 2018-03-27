@@ -11,3 +11,9 @@ type User {
   password: String!
   comments: [Comment!]!
 }
+
+type Vote {
+  id: ID! @unique
+  comment: Comment!
+  user: User!
+}

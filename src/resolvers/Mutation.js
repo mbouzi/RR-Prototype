@@ -45,8 +45,31 @@ async function login(parent, args, context, info) {
   }
 }
 
+async function vote(parent, args, context, info) {
+  const userId = getUserId(context)
+  const { commentId } = args
+  const commentExists = await context.db.exists.Vote({
+    user: { id: userId },
+    comment: { id: commentkId },
+  })
+  if (commentExists) {
+    throw new Error(`Already voted for comment: ${commentId}`)
+  }
+
+  return context.db.mutation.createVote(
+    {
+      data: {
+        user: { connect: { id: userId } },
+        comment: { connect: { id: commentId } },
+      },
+    },
+    info,
+  )
+}
+
 module.exports = {
   post,
   signup,
-  login
+  login,
+  vote
 }
