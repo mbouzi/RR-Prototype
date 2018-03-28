@@ -1,28 +1,28 @@
-const { GraphQLServer } = require('graphql-yoga')
-const { Prisma } = require('prisma-binding')
-const Query = require('./resolvers/Query')
-const Mutation = require('./resolvers/Mutation')
-const Subscription = require('./resolvers/Subscription')
+import React from 'react'
+import ReactDOM from 'react-dom'
+import './styles/index.css'
+import App from './components/App'
+import registerServiceWorker from './registerServiceWorker'
+
+import { ApolloProvider } from 'react-apollo'
+import { ApolloClient } from 'apollo-client'
+import { HttpLink } from 'apollo-link-http'
+import { InMemoryCache } from 'apollo-cache-inmemory'
 
 
-const resolvers = {
-  Query,
-  Mutation,
-  Subscription
-}
+const httpLink = new HttpLink({ uri: 'http://localhost:4000' })
 
-const server = new GraphQLServer({
-  typeDefs: './src/schema.graphql',
-  resolvers,
-  context: req => ({
-    ...req,
-    db: new Prisma({
-      typeDefs: 'src/generated/prisma.graphql',
-      endpoint: 'https://us1.prisma.sh/public-fossilfinger-266/realrap-proto/dev', // the endpoint of the Prisma DB service
-      secret: 'mysecret123', // specified in database/prisma.yml
-      debug: true, // log all GraphQL queryies & mutations
-    }),
-  }),
+
+const client = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
 })
 
-server.start(() => console.log('Server is running on http://localhost:4000'))
+
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
+  , document.getElementById('root')
+)
+registerServiceWorker()
