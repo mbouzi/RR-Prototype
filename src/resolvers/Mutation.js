@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { APP_SECRET, getUserId } = require('../utils')
+const { APP_SECRET, getUserId, getUserArray } = require('../utils')
 
 
 function post(parent, args, context, info) {
@@ -11,6 +11,14 @@ function post(parent, args, context, info) {
     info,
   )
 }
+
+function importArtist(parent, args, context, info) {
+  const userId = getUserId(context)
+  const { image, name, age, description } = args
+  return context.db.mutation.createArtist(
+    { data: { image, name, age, description } },info,)
+}
+
 
 async function signup(parent, args, context, info) {
   const password = await bcrypt.hash(args.password, 10)
@@ -25,6 +33,8 @@ async function signup(parent, args, context, info) {
     user,
   }
 }
+
+
 
 async function login(parent, args, context, info) {
   const user = await context.db.query.user({ where: { email: args.email } })
@@ -71,5 +81,7 @@ module.exports = {
   post,
   signup,
   login,
-  vote
+  vote,
+  importArtist,
+  pickArtist
 }

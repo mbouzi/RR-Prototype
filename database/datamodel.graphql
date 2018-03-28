@@ -10,10 +10,29 @@ type User {
   email: String! @unique
   password: String!
   comments: [Comment!]!
+  topFive: [Artist!]!
 }
 
 type Vote {
   id: ID! @unique
   comment: Comment!
   user: User!
+}
+
+type Skill {
+	id: ID! @unique
+	name: String! @unique
+	average: Float!
+	user: User!
+}
+
+type Artist {
+	id: ID! @unique
+	name: String!
+	skills: [Skill!]!
+	age: Int!
+	description: String!
+	image: String!
+	comments: [Comment!]!
+	pickedBy: [User!]!
 }

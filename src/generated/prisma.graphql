@@ -5,10 +5,28 @@
 # Model Types
 #
 
+type Artist implements Node {
+  id: ID!
+  name: String!
+  skills(where: SkillWhereInput, orderBy: SkillOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Skill!]
+  age: Int!
+  description: String!
+  image: String!
+  comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
+  pickedBy(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+}
+
 type Comment implements Node {
   id: ID!
   text: String!
   postedBy(where: UserWhereInput): User
+}
+
+type Skill implements Node {
+  id: ID!
+  name: String!
+  average: Float!
+  user(where: UserWhereInput): User!
 }
 
 type User implements Node {
@@ -17,6 +35,7 @@ type User implements Node {
   email: String!
   password: String!
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
+  topFive(where: ArtistWhereInput, orderBy: ArtistOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Artist!]
 }
 
 type Vote implements Node {
@@ -30,7 +49,15 @@ type Vote implements Node {
 # Other Types
 #
 
+type AggregateArtist {
+  count: Int!
+}
+
 type AggregateComment {
+  count: Int!
+}
+
+type AggregateSkill {
   count: Int!
 }
 
@@ -40,6 +67,423 @@ type AggregateUser {
 
 type AggregateVote {
   count: Int!
+}
+
+"""
+A connection to a list of items.
+"""
+type ArtistConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [ArtistEdge]!
+  aggregate: AggregateArtist!
+}
+
+input ArtistCreateInput {
+  name: String!
+  age: Int!
+  description: String!
+  image: String!
+  skills: SkillCreateManyInput
+  comments: CommentCreateManyInput
+  pickedBy: UserCreateManyWithoutTopFiveInput
+}
+
+input ArtistCreateManyWithoutPickedByInput {
+  create: [ArtistCreateWithoutPickedByInput!]
+  connect: [ArtistWhereUniqueInput!]
+}
+
+input ArtistCreateWithoutPickedByInput {
+  name: String!
+  age: Int!
+  description: String!
+  image: String!
+  skills: SkillCreateManyInput
+  comments: CommentCreateManyInput
+}
+
+"""
+An edge in a connection.
+"""
+type ArtistEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Artist!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum ArtistOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  age_ASC
+  age_DESC
+  description_ASC
+  description_DESC
+  image_ASC
+  image_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type ArtistPreviousValues {
+  id: ID!
+  name: String!
+  age: Int!
+  description: String!
+  image: String!
+}
+
+type ArtistSubscriptionPayload {
+  mutation: MutationType!
+  node: Artist
+  updatedFields: [String!]
+  previousValues: ArtistPreviousValues
+}
+
+input ArtistSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [ArtistSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [ArtistSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: ArtistWhereInput
+}
+
+input ArtistUpdateInput {
+  name: String
+  age: Int
+  description: String
+  image: String
+  skills: SkillUpdateManyInput
+  comments: CommentUpdateManyInput
+  pickedBy: UserUpdateManyWithoutTopFiveInput
+}
+
+input ArtistUpdateManyWithoutPickedByInput {
+  create: [ArtistCreateWithoutPickedByInput!]
+  connect: [ArtistWhereUniqueInput!]
+  disconnect: [ArtistWhereUniqueInput!]
+  delete: [ArtistWhereUniqueInput!]
+  update: [ArtistUpdateWithWhereUniqueWithoutPickedByInput!]
+  upsert: [ArtistUpsertWithWhereUniqueWithoutPickedByInput!]
+}
+
+input ArtistUpdateWithoutPickedByDataInput {
+  name: String
+  age: Int
+  description: String
+  image: String
+  skills: SkillUpdateManyInput
+  comments: CommentUpdateManyInput
+}
+
+input ArtistUpdateWithWhereUniqueWithoutPickedByInput {
+  where: ArtistWhereUniqueInput!
+  data: ArtistUpdateWithoutPickedByDataInput!
+}
+
+input ArtistUpsertWithWhereUniqueWithoutPickedByInput {
+  where: ArtistWhereUniqueInput!
+  update: ArtistUpdateWithoutPickedByDataInput!
+  create: ArtistCreateWithoutPickedByInput!
+}
+
+input ArtistWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [ArtistWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [ArtistWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  name: String
+  """
+  All values that are not equal to given value.
+  """
+  name_not: String
+  """
+  All values that are contained in given list.
+  """
+  name_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  name_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  name_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  name_lte: String
+  """
+  All values greater than the given value.
+  """
+  name_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  name_gte: String
+  """
+  All values containing the given string.
+  """
+  name_contains: String
+  """
+  All values not containing the given string.
+  """
+  name_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  name_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  name_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  name_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  name_not_ends_with: String
+  age: Int
+  """
+  All values that are not equal to given value.
+  """
+  age_not: Int
+  """
+  All values that are contained in given list.
+  """
+  age_in: [Int!]
+  """
+  All values that are not contained in given list.
+  """
+  age_not_in: [Int!]
+  """
+  All values less than the given value.
+  """
+  age_lt: Int
+  """
+  All values less than or equal the given value.
+  """
+  age_lte: Int
+  """
+  All values greater than the given value.
+  """
+  age_gt: Int
+  """
+  All values greater than or equal the given value.
+  """
+  age_gte: Int
+  description: String
+  """
+  All values that are not equal to given value.
+  """
+  description_not: String
+  """
+  All values that are contained in given list.
+  """
+  description_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  description_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  description_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  description_lte: String
+  """
+  All values greater than the given value.
+  """
+  description_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  description_gte: String
+  """
+  All values containing the given string.
+  """
+  description_contains: String
+  """
+  All values not containing the given string.
+  """
+  description_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  description_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  description_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  description_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  description_not_ends_with: String
+  image: String
+  """
+  All values that are not equal to given value.
+  """
+  image_not: String
+  """
+  All values that are contained in given list.
+  """
+  image_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  image_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  image_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  image_lte: String
+  """
+  All values greater than the given value.
+  """
+  image_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  image_gte: String
+  """
+  All values containing the given string.
+  """
+  image_contains: String
+  """
+  All values not containing the given string.
+  """
+  image_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  image_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  image_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  image_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  image_not_ends_with: String
+  skills_every: SkillWhereInput
+  skills_some: SkillWhereInput
+  skills_none: SkillWhereInput
+  comments_every: CommentWhereInput
+  comments_some: CommentWhereInput
+  comments_none: CommentWhereInput
+  pickedBy_every: UserWhereInput
+  pickedBy_some: UserWhereInput
+  pickedBy_none: UserWhereInput
+}
+
+input ArtistWhereUniqueInput {
+  id: ID
 }
 
 type BatchPayload {
@@ -67,6 +511,11 @@ type CommentConnection {
 input CommentCreateInput {
   text: String!
   postedBy: UserCreateOneWithoutCommentsInput
+}
+
+input CommentCreateManyInput {
+  create: [CommentCreateInput!]
+  connect: [CommentWhereUniqueInput!]
 }
 
 input CommentCreateManyWithoutPostedByInput {
@@ -158,6 +607,15 @@ input CommentUpdateInput {
   postedBy: UserUpdateOneWithoutCommentsInput
 }
 
+input CommentUpdateManyInput {
+  create: [CommentCreateInput!]
+  connect: [CommentWhereUniqueInput!]
+  disconnect: [CommentWhereUniqueInput!]
+  delete: [CommentWhereUniqueInput!]
+  update: [CommentUpdateWithWhereUniqueNestedInput!]
+  upsert: [CommentUpsertWithWhereUniqueNestedInput!]
+}
+
 input CommentUpdateManyWithoutPostedByInput {
   create: [CommentCreateWithoutPostedByInput!]
   connect: [CommentWhereUniqueInput!]
@@ -179,12 +637,23 @@ input CommentUpdateWithoutPostedByDataInput {
   text: String
 }
 
+input CommentUpdateWithWhereUniqueNestedInput {
+  where: CommentWhereUniqueInput!
+  data: CommentUpdateDataInput!
+}
+
 input CommentUpdateWithWhereUniqueWithoutPostedByInput {
   where: CommentWhereUniqueInput!
   data: CommentUpdateWithoutPostedByDataInput!
 }
 
 input CommentUpsertNestedInput {
+  update: CommentUpdateDataInput!
+  create: CommentCreateInput!
+}
+
+input CommentUpsertWithWhereUniqueNestedInput {
+  where: CommentWhereUniqueInput!
   update: CommentUpdateDataInput!
   create: CommentCreateInput!
 }
@@ -327,21 +796,33 @@ type Mutation {
   createComment(data: CommentCreateInput!): Comment!
   createUser(data: UserCreateInput!): User!
   createVote(data: VoteCreateInput!): Vote!
+  createSkill(data: SkillCreateInput!): Skill!
+  createArtist(data: ArtistCreateInput!): Artist!
   updateComment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateVote(data: VoteUpdateInput!, where: VoteWhereUniqueInput!): Vote
+  updateSkill(data: SkillUpdateInput!, where: SkillWhereUniqueInput!): Skill
+  updateArtist(data: ArtistUpdateInput!, where: ArtistWhereUniqueInput!): Artist
   deleteComment(where: CommentWhereUniqueInput!): Comment
   deleteUser(where: UserWhereUniqueInput!): User
   deleteVote(where: VoteWhereUniqueInput!): Vote
+  deleteSkill(where: SkillWhereUniqueInput!): Skill
+  deleteArtist(where: ArtistWhereUniqueInput!): Artist
   upsertComment(where: CommentWhereUniqueInput!, create: CommentCreateInput!, update: CommentUpdateInput!): Comment!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertVote(where: VoteWhereUniqueInput!, create: VoteCreateInput!, update: VoteUpdateInput!): Vote!
+  upsertSkill(where: SkillWhereUniqueInput!, create: SkillCreateInput!, update: SkillUpdateInput!): Skill!
+  upsertArtist(where: ArtistWhereUniqueInput!, create: ArtistCreateInput!, update: ArtistUpdateInput!): Artist!
   updateManyComments(data: CommentUpdateInput!, where: CommentWhereInput!): BatchPayload!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
   updateManyVotes(data: VoteUpdateInput!, where: VoteWhereInput!): BatchPayload!
+  updateManySkills(data: SkillUpdateInput!, where: SkillWhereInput!): BatchPayload!
+  updateManyArtists(data: ArtistUpdateInput!, where: ArtistWhereInput!): BatchPayload!
   deleteManyComments(where: CommentWhereInput!): BatchPayload!
   deleteManyUsers(where: UserWhereInput!): BatchPayload!
   deleteManyVotes(where: VoteWhereInput!): BatchPayload!
+  deleteManySkills(where: SkillWhereInput!): BatchPayload!
+  deleteManyArtists(where: ArtistWhereInput!): BatchPayload!
 }
 
 enum MutationType {
@@ -386,12 +867,18 @@ type Query {
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   votes(where: VoteWhereInput, orderBy: VoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Vote]!
+  skills(where: SkillWhereInput, orderBy: SkillOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Skill]!
+  artists(where: ArtistWhereInput, orderBy: ArtistOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Artist]!
   comment(where: CommentWhereUniqueInput!): Comment
   user(where: UserWhereUniqueInput!): User
   vote(where: VoteWhereUniqueInput!): Vote
+  skill(where: SkillWhereUniqueInput!): Skill
+  artist(where: ArtistWhereUniqueInput!): Artist
   commentsConnection(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CommentConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   votesConnection(where: VoteWhereInput, orderBy: VoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): VoteConnection!
+  skillsConnection(where: SkillWhereInput, orderBy: SkillOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SkillConnection!
+  artistsConnection(where: ArtistWhereInput, orderBy: ArtistOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ArtistConnection!
   """
   Fetches an object given its ID
   """
@@ -401,10 +888,290 @@ type Query {
   id: ID!): Node
 }
 
+"""
+A connection to a list of items.
+"""
+type SkillConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [SkillEdge]!
+  aggregate: AggregateSkill!
+}
+
+input SkillCreateInput {
+  name: String!
+  average: Float!
+  user: UserCreateOneInput!
+}
+
+input SkillCreateManyInput {
+  create: [SkillCreateInput!]
+  connect: [SkillWhereUniqueInput!]
+}
+
+"""
+An edge in a connection.
+"""
+type SkillEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Skill!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum SkillOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  average_ASC
+  average_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type SkillPreviousValues {
+  id: ID!
+  name: String!
+  average: Float!
+}
+
+type SkillSubscriptionPayload {
+  mutation: MutationType!
+  node: Skill
+  updatedFields: [String!]
+  previousValues: SkillPreviousValues
+}
+
+input SkillSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [SkillSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [SkillSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: SkillWhereInput
+}
+
+input SkillUpdateDataInput {
+  name: String
+  average: Float
+  user: UserUpdateOneInput
+}
+
+input SkillUpdateInput {
+  name: String
+  average: Float
+  user: UserUpdateOneInput
+}
+
+input SkillUpdateManyInput {
+  create: [SkillCreateInput!]
+  connect: [SkillWhereUniqueInput!]
+  disconnect: [SkillWhereUniqueInput!]
+  delete: [SkillWhereUniqueInput!]
+  update: [SkillUpdateWithWhereUniqueNestedInput!]
+  upsert: [SkillUpsertWithWhereUniqueNestedInput!]
+}
+
+input SkillUpdateWithWhereUniqueNestedInput {
+  where: SkillWhereUniqueInput!
+  data: SkillUpdateDataInput!
+}
+
+input SkillUpsertWithWhereUniqueNestedInput {
+  where: SkillWhereUniqueInput!
+  update: SkillUpdateDataInput!
+  create: SkillCreateInput!
+}
+
+input SkillWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [SkillWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [SkillWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  name: String
+  """
+  All values that are not equal to given value.
+  """
+  name_not: String
+  """
+  All values that are contained in given list.
+  """
+  name_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  name_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  name_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  name_lte: String
+  """
+  All values greater than the given value.
+  """
+  name_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  name_gte: String
+  """
+  All values containing the given string.
+  """
+  name_contains: String
+  """
+  All values not containing the given string.
+  """
+  name_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  name_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  name_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  name_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  name_not_ends_with: String
+  average: Float
+  """
+  All values that are not equal to given value.
+  """
+  average_not: Float
+  """
+  All values that are contained in given list.
+  """
+  average_in: [Float!]
+  """
+  All values that are not contained in given list.
+  """
+  average_not_in: [Float!]
+  """
+  All values less than the given value.
+  """
+  average_lt: Float
+  """
+  All values less than or equal the given value.
+  """
+  average_lte: Float
+  """
+  All values greater than the given value.
+  """
+  average_gt: Float
+  """
+  All values greater than or equal the given value.
+  """
+  average_gte: Float
+  user: UserWhereInput
+}
+
+input SkillWhereUniqueInput {
+  id: ID
+  name: String
+}
+
 type Subscription {
   comment(where: CommentSubscriptionWhereInput): CommentSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   vote(where: VoteSubscriptionWhereInput): VoteSubscriptionPayload
+  skill(where: SkillSubscriptionWhereInput): SkillSubscriptionPayload
+  artist(where: ArtistSubscriptionWhereInput): ArtistSubscriptionPayload
 }
 
 """
@@ -427,6 +1194,12 @@ input UserCreateInput {
   email: String!
   password: String!
   comments: CommentCreateManyWithoutPostedByInput
+  topFive: ArtistCreateManyWithoutPickedByInput
+}
+
+input UserCreateManyWithoutTopFiveInput {
+  create: [UserCreateWithoutTopFiveInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 input UserCreateOneInput {
@@ -443,6 +1216,14 @@ input UserCreateWithoutCommentsInput {
   username: String!
   email: String!
   password: String!
+  topFive: ArtistCreateManyWithoutPickedByInput
+}
+
+input UserCreateWithoutTopFiveInput {
+  username: String!
+  email: String!
+  password: String!
+  comments: CommentCreateManyWithoutPostedByInput
 }
 
 """
@@ -521,6 +1302,7 @@ input UserUpdateDataInput {
   email: String
   password: String
   comments: CommentUpdateManyWithoutPostedByInput
+  topFive: ArtistUpdateManyWithoutPickedByInput
 }
 
 input UserUpdateInput {
@@ -528,6 +1310,16 @@ input UserUpdateInput {
   email: String
   password: String
   comments: CommentUpdateManyWithoutPostedByInput
+  topFive: ArtistUpdateManyWithoutPickedByInput
+}
+
+input UserUpdateManyWithoutTopFiveInput {
+  create: [UserCreateWithoutTopFiveInput!]
+  connect: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  delete: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutTopFiveInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutTopFiveInput!]
 }
 
 input UserUpdateOneInput {
@@ -551,6 +1343,19 @@ input UserUpdateWithoutCommentsDataInput {
   username: String
   email: String
   password: String
+  topFive: ArtistUpdateManyWithoutPickedByInput
+}
+
+input UserUpdateWithoutTopFiveDataInput {
+  username: String
+  email: String
+  password: String
+  comments: CommentUpdateManyWithoutPostedByInput
+}
+
+input UserUpdateWithWhereUniqueWithoutTopFiveInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutTopFiveDataInput!
 }
 
 input UserUpsertNestedInput {
@@ -561,6 +1366,12 @@ input UserUpsertNestedInput {
 input UserUpsertWithoutCommentsInput {
   update: UserUpdateWithoutCommentsDataInput!
   create: UserCreateWithoutCommentsInput!
+}
+
+input UserUpsertWithWhereUniqueWithoutTopFiveInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutTopFiveDataInput!
+  create: UserCreateWithoutTopFiveInput!
 }
 
 input UserWhereInput {
@@ -787,6 +1598,9 @@ input UserWhereInput {
   comments_every: CommentWhereInput
   comments_some: CommentWhereInput
   comments_none: CommentWhereInput
+  topFive_every: ArtistWhereInput
+  topFive_some: ArtistWhereInput
+  topFive_none: ArtistWhereInput
 }
 
 input UserWhereUniqueInput {

@@ -16,7 +16,17 @@ const newVote = {
   },
 }
 
+const newSkill = {
+  subscribe: (parent, args, ctx, info) => {
+    return ctx.db.subscription.vote(
+      { },
+      info,
+    )
+  },
+}
+
 module.exports = {
   newComment,
   newVote,
+  newSkill
 }
